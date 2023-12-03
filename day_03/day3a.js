@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-fs.readFile('./day_03/day3a_input.txt', 'utf8', (err, data) => {
+fs.readFile('./day_03/day3_test.txt', 'utf8', (err, data) => {
     if (err) {
         console.error(err);
         return;
@@ -25,23 +25,28 @@ fs.readFile('./day_03/day3a_input.txt', 'utf8', (err, data) => {
 
         expandedArrays.push(expandedArray); // append expandedArray to expandedArrays
     });
+    console.table(expandedArrays);
     const upArray = expandedArrays.slice(1);
     upArray.push(Array.from(expandedArrays[0], () => false));
+    console.table(upArray);
     const downArray = expandedArrays.slice(0, -1);
     downArray.unshift(Array.from(expandedArrays[0], () => false));
-    
-    expandedArrays.forEach(row => {
-        row.forEach((value, index) => {
-            if (value || upArray[expandedArrays.indexOf(row)][index] || downArray[expandedArrays.indexOf(row)][index]) {
-                row[index] = true;
-            }
-        });
-    });
+    console.table(downArray);
+
+    const orResult = expandedArrays.map((row, rowIndex) => 
+        row.map((_, colIndex) => 
+            upArray[rowIndex][colIndex] || downArray[rowIndex][colIndex] || expandedArrays[rowIndex][colIndex]
+        )
+    );
+
     const nums2sum = Array.from(expandedArrays, () => Array(expandedArrays[0].length).fill(" "));
 
     rows.forEach(row => {
         rowArray = row.split("");
         rowArray.forEach((value, index) => {
+            if (!isNaN(value) && expandedArrays[rows.indexOf(row)][index]) {
+                nums2sum[rows.indexOf(row)][index] = value.toString();
+            }
             if (!isNaN(value) && expandedArrays[rows.indexOf(row)][index]) {
                 nums2sum[rows.indexOf(row)][index] = value.toString();
             }
