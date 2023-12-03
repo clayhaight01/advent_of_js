@@ -1,58 +1,45 @@
 const fs = require('fs');
 
-fs.readFile('./day_03/day3_test.txt', 'utf8', (err, data) => {
+fs.readFile('./day_03/day3_input.txt', 'utf8', function(err, data) {
     if (err) {
-        console.error(err);
+        console.error("Error reading file:", err);
         return;
     }
+    let charactersArray = data.split('\n').map(line => line.trim());
 
-    const rows = data.split('\n');
-    const expandedArrays = []; // 2D array to store expanded arrays
+    let rows = charactersArray.length;
+    let cols = rows ? charactersArray[0].length : 0;
+    let visited = charactersArray.map(row => Array(row.length).fill(false));
+    let sum = 0;
 
-    rows.forEach(row => {
-        const booleanArray = Array.from(row).map(char => {
-            return (char === '.' || !isNaN(char)) ? false : true;
-        });
-        const expandedArray = Array.from(booleanArray, () => false);
-        booleanArray.map((value, index) => {
-            if (value) {
-                expandedArray[index] = true;
-                if (index > 0) expandedArray[index - 1] = true; // left
-                if (index < expandedArray.length - 1) expandedArray[index + 1] = true; // right
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < charactersArray[i].length; j++) {
+            let v = charactersArray[i][j];
+            if (!isNaN(parseInt(v)) && !visited[i][j]) {
+                let pn = false;
+                for (let x = Math.max(0, i - 1); x < Math.min(i + 2, rows); x++) {
+                    for (let y = Math.max(0, j - 1); y < Math.min(j + 2, cols); y++) {
+                        if (isNaN(parseInt(charactersArray[x][y])) && charactersArray[x][y] !== '.') {
+                            pn = true;
+                        }
+                    }
+                }
+                if (pn) {
+                    let jTemp = j;
+                    while (jTemp > 0 && !isNaN(parseInt(charactersArray[i][jTemp - 1]))) {
+                        jTemp -= 1;
+                    }
+                    let pnum = parseInt(charactersArray[i][jTemp]);
+                    visited[i][jTemp] = true;
+                    while (jTemp + 1 < cols && !isNaN(parseInt(charactersArray[i][jTemp + 1]))) {
+                        jTemp += 1;
+                        pnum = pnum * 10 + parseInt(charactersArray[i][jTemp]);
+                        visited[i][jTemp] = true;
+                    }
+                    sum += pnum;
+                }
             }
-            return value;
-        });
-
-        expandedArrays.push(expandedArray); // append expandedArray to expandedArrays
-    });
-    console.table(expandedArrays);
-    const upArray = expandedArrays.slice(1);
-    upArray.push(Array.from(expandedArrays[0], () => false));
-    console.table(upArray);
-    const downArray = expandedArrays.slice(0, -1);
-    downArray.unshift(Array.from(expandedArrays[0], () => false));
-    console.table(downArray);
-
-    const orResult = expandedArrays.map((row, rowIndex) => 
-        row.map((_, colIndex) => 
-            upArray[rowIndex][colIndex] || downArray[rowIndex][colIndex] || expandedArrays[rowIndex][colIndex]
-        )
-    );
-
-    const nums2sum = Array.from(expandedArrays, () => Array(expandedArrays[0].length).fill(" "));
-
-    rows.forEach(row => {
-        rowArray = row.split("");
-        rowArray.forEach((value, index) => {
-            if (!isNaN(value) && expandedArrays[rows.indexOf(row)][index]) {
-                nums2sum[rows.indexOf(row)][index] = value.toString();
-            }
-            if (!isNaN(value) && expandedArrays[rows.indexOf(row)][index]) {
-                nums2sum[rows.indexOf(row)][index] = value.toString();
-            }
-        });
-    });
-    nums2sum.forEach(row => {
-        const rowString = row.join("");
-    });
+        }
+    }
+    console.log(sum);
 });
