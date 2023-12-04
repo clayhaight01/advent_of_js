@@ -15,6 +15,5 @@ for r, row in enumerate(characters_array):
             num_wins += 1
     for i in range(num_wins):
         multiplier[i+r+1] += multiplier[r]
-    print(multiplier)
 print(sum(multiplier))
 
