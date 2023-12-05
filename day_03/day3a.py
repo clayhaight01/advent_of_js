@@ -1,5 +1,5 @@
 # I am so sick of JS already I just want to submit something
-with open("day3_input.txt", 'r') as file:
+with open("day_03/day3_input.txt", 'r') as file:
     characters_array = [line.strip() for line in file]
 
 rows = len(characters_array)
