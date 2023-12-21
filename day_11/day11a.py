@@ -1,4 +1,3 @@
-from pprint import pprint
 f = "day_11/day11_input.txt"
 with open(f, 'r') as file:
     lines = file.read().splitlines()
